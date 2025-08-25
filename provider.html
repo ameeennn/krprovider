@@ -591,6 +591,9 @@
                 if (error) throw error;
 
                 const requests = data || [];
+                console.log('Fetched requests:', requests);
+                console.log('Provider pincodes:', providerPincodes);
+                console.log('Provider categories:', providerCategories);
                 
                 // Filter requests based on provider assignment
                 const pending = requests.filter(r => 
@@ -714,7 +717,7 @@
                         provider: currentProvider.email,
                         accepted_by: currentProvider.name
                     })
-                    .eq('request_id', requestId)
+                    .eq('request_id', parseInt(requestId))
                     .eq('status', 'Pending');
 
                 if (error) throw error;
@@ -733,8 +736,11 @@
             try {
                 const { error } = await supabaseClient
                     .from('requests')
-                    .update({ status: 'Rejected' })
-                    .eq('request_id', requestId);
+                    .update({ 
+                        status: 'Rejected',
+                        provider: currentProvider.email
+                    })
+                    .eq('request_id', parseInt(requestId));
 
                 if (error) throw error;
 
@@ -752,7 +758,7 @@
                 const { error } = await supabaseClient
                     .from('requests')
                     .update({ status: 'Completed' })
-                    .eq('request_id', requestId);
+                    .eq('request_id', parseInt(requestId));
 
                 if (error) throw error;
 
@@ -772,7 +778,7 @@
                 const { error } = await supabaseClient
                     .from('requests')
                     .update({ status: 'Provider Cancelled' })
-                    .eq('request_id', requestId);
+                    .eq('request_id', parseInt(requestId));
 
                 if (error) throw error;
 
