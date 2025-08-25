@@ -267,15 +267,15 @@
 
                     <!-- Overall Section -->
                     <div id="overallSection" class="section hidden">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                            <div class="premium-card rounded-xl card-shadow p-4 md:p-6 border-l-4 border-red-400 hover:scale-105 transition duration-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                            <div class="premium-card rounded-xl card-shadow p-4 md:p-6 border-l-4 border-yellow-400 hover:scale-105 transition duration-300">
                                 <div class="flex items-center">
-                                    <div class="p-2 md:p-3 rounded-full bg-gradient-to-r from-red-400 to-pink-500">
-                                        <i class="fas fa-times text-white text-sm md:text-base"></i>
+                                    <div class="p-2 md:p-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+                                        <i class="fas fa-clock text-white text-sm md:text-base"></i>
                                     </div>
                                     <div class="ml-3 md:ml-4">
-                                        <p class="text-xs md:text-sm font-medium text-gray-600">Rejected</p>
-                                        <p id="rejectedCount" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text text-transparent">0</p>
+                                        <p class="text-xs md:text-sm font-medium text-gray-600">Pending</p>
+                                        <p id="pendingCount" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-600 bg-clip-text text-transparent">0</p>
                                     </div>
                                 </div>
                             </div>
@@ -290,7 +290,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="premium-card rounded-xl card-shadow p-4 md:p-6 border-l-4 border-green-400 hover:scale-105 transition duration-300 sm:col-span-2 lg:col-span-1">
+                            <div class="premium-card rounded-xl card-shadow p-4 md:p-6 border-l-4 border-red-400 hover:scale-105 transition duration-300">
+                                <div class="flex items-center">
+                                    <div class="p-2 md:p-3 rounded-full bg-gradient-to-r from-red-400 to-pink-500">
+                                        <i class="fas fa-times text-white text-sm md:text-base"></i>
+                                    </div>
+                                    <div class="ml-3 md:ml-4">
+                                        <p class="text-xs md:text-sm font-medium text-gray-600">Rejected</p>
+                                        <p id="rejectedCount" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text text-transparent">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="premium-card rounded-xl card-shadow p-4 md:p-6 border-l-4 border-green-400 hover:scale-105 transition duration-300">
                                 <div class="flex items-center">
                                     <div class="p-2 md:p-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-500">
                                         <i class="fas fa-trophy text-white text-sm md:text-base"></i>
@@ -298,6 +309,49 @@
                                     <div class="ml-3 md:ml-4">
                                         <p class="text-xs md:text-sm font-medium text-gray-600">Completed</p>
                                         <p id="completedCount" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stats Circle Chart -->
+                        <div class="premium-card rounded-xl card-shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">Request Overview</h3>
+                            <div class="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-y-0 md:space-x-8">
+                                <!-- Circle Chart -->
+                                <div class="relative">
+                                    <svg width="200" height="200" class="transform -rotate-90">
+                                        <circle cx="100" cy="100" r="80" fill="none" stroke="#f3f4f6" stroke-width="20"/>
+                                        <circle id="pendingCircle" cx="100" cy="100" r="80" fill="none" stroke="#f59e0b" stroke-width="20" stroke-dasharray="0 502" stroke-linecap="round" class="transition-all duration-1000"/>
+                                        <circle id="acceptedCircle" cx="100" cy="100" r="80" fill="none" stroke="#3b82f6" stroke-width="20" stroke-dasharray="0 502" stroke-linecap="round" class="transition-all duration-1000"/>
+                                        <circle id="rejectedCircle" cx="100" cy="100" r="80" fill="none" stroke="#ef4444" stroke-width="20" stroke-dasharray="0 502" stroke-linecap="round" class="transition-all duration-1000"/>
+                                        <circle id="completedCircle" cx="100" cy="100" r="80" fill="none" stroke="#10b981" stroke-width="20" stroke-dasharray="0 502" stroke-linecap="round" class="transition-all duration-1000"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="text-center">
+                                            <div id="totalCount" class="text-2xl font-bold text-gray-800">0</div>
+                                            <div class="text-sm text-gray-600">Total</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Legend -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
+                                        <span class="text-sm text-gray-700">Pending</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 rounded-full bg-blue-500"></div>
+                                        <span class="text-sm text-gray-700">Accepted</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 rounded-full bg-red-500"></div>
+                                        <span class="text-sm text-gray-700">Rejected</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 rounded-full bg-green-500"></div>
+                                        <span class="text-sm text-gray-700">Completed</span>
                                     </div>
                                 </div>
                             </div>
@@ -538,16 +592,28 @@
 
                 const requests = data || [];
                 
-                // Separate requests by status
-                const pending = requests.filter(r => r.status === 'Pending');
-                const accepted = requests.filter(r => r.status === 'Accepted');
-                const rejected = requests.filter(r => r.status === 'Rejected');
-                const completed = requests.filter(r => r.status === 'Completed');
+                // Filter requests based on provider assignment
+                const pending = requests.filter(r => 
+                    r.status === 'Pending' && 
+                    (r.provider === 'default' || r.provider.includes(currentProvider.email))
+                );
+                const accepted = requests.filter(r => 
+                    r.status === 'Accepted' && 
+                    r.provider === currentProvider.email
+                );
+                const rejected = requests.filter(r => 
+                    r.status === 'Rejected' && 
+                    r.provider === currentProvider.email
+                );
+                const completed = requests.filter(r => 
+                    r.status === 'Completed' && 
+                    r.provider === currentProvider.email
+                );
 
                 renderPendingRequests(pending);
                 renderAcceptedRequests(accepted);
                 renderRejectedRequests(rejected);
-                updateStats(rejected.length, accepted.length, completed.length);
+                updateStats(pending.length, accepted.length, rejected.length, completed.length);
 
             } catch (error) {
                 console.error('Error loading requests:', error);
@@ -643,8 +709,13 @@
             try {
                 const { error } = await supabaseClient
                     .from('requests')
-                    .update({ status: 'Accepted' })
-                    .eq('request_id', requestId);
+                    .update({ 
+                        status: 'Accepted',
+                        provider: currentProvider.email,
+                        accepted_by: currentProvider.name
+                    })
+                    .eq('request_id', requestId)
+                    .eq('status', 'Pending');
 
                 if (error) throw error;
 
@@ -654,6 +725,7 @@
             } catch (error) {
                 console.error('Error accepting request:', error);
                 alert('Failed to accept request');
+                loadRequests();
             }
         }
 
@@ -748,10 +820,54 @@
             }
         }
 
-        function updateStats(rejected, accepted, completed) {
-            document.getElementById('rejectedCount').textContent = rejected;
+        function updateStats(pending, accepted, rejected, completed) {
+            document.getElementById('pendingCount').textContent = pending;
             document.getElementById('acceptedCount').textContent = accepted;
+            document.getElementById('rejectedCount').textContent = rejected;
             document.getElementById('completedCount').textContent = completed;
+            
+            // Update circle chart
+            updateStatsCircle(pending, accepted, rejected, completed);
+        }
+        
+        function updateStatsCircle(pending, accepted, rejected, completed) {
+            const total = pending + accepted + rejected + completed;
+            document.getElementById('totalCount').textContent = total;
+            
+            if (total === 0) {
+                // Reset all circles
+                document.getElementById('pendingCircle').style.strokeDasharray = '0 502';
+                document.getElementById('acceptedCircle').style.strokeDasharray = '0 502';
+                document.getElementById('rejectedCircle').style.strokeDasharray = '0 502';
+                document.getElementById('completedCircle').style.strokeDasharray = '0 502';
+                return;
+            }
+            
+            const circumference = 502; // 2 * π * 80
+            let currentOffset = 0;
+            
+            // Pending
+            const pendingLength = (pending / total) * circumference;
+            document.getElementById('pendingCircle').style.strokeDasharray = `${pendingLength} ${circumference}`;
+            document.getElementById('pendingCircle').style.strokeDashoffset = -currentOffset;
+            currentOffset += pendingLength;
+            
+            // Accepted
+            const acceptedLength = (accepted / total) * circumference;
+            document.getElementById('acceptedCircle').style.strokeDasharray = `${acceptedLength} ${circumference}`;
+            document.getElementById('acceptedCircle').style.strokeDashoffset = -currentOffset;
+            currentOffset += acceptedLength;
+            
+            // Rejected
+            const rejectedLength = (rejected / total) * circumference;
+            document.getElementById('rejectedCircle').style.strokeDasharray = `${rejectedLength} ${circumference}`;
+            document.getElementById('rejectedCircle').style.strokeDashoffset = -currentOffset;
+            currentOffset += rejectedLength;
+            
+            // Completed
+            const completedLength = (completed / total) * circumference;
+            document.getElementById('completedCircle').style.strokeDasharray = `${completedLength} ${circumference}`;
+            document.getElementById('completedCircle').style.strokeDashoffset = -currentOffset;
         }
 
         function loadProfileData() {
@@ -822,7 +938,8 @@
                 const { data, error } = await supabaseClient
                     .from('requests')
                     .select('*')
-                    .eq('status', 'Accepted');
+                    .eq('status', 'Accepted')
+                    .eq('provider', currentProvider.email);
                 
                 if (error) throw error;
                 
@@ -950,9 +1067,6 @@
             localStorage.removeItem('providerData');
             showAuth();
         }
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
