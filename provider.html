@@ -41,7 +41,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <input type="password" id="loginPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
-                    <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300">
+                    <button type="submit" id="providerLoginBtn" class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300">
                         Sign In
                     </button>
                 </form>
@@ -121,7 +121,7 @@
                             <input type="password" id="confirmPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
-                    <button type="submit" class="w-full mt-6 py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300">
+                    <button type="submit" id="providerRegisterBtn" class="w-full mt-6 py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300">
                         Register as Provider
                     </button>
                 </form>
@@ -488,6 +488,10 @@
             event.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('providerLoginBtn');
+
+            // Set loading state
+            setButtonLoading(loginBtn, true, 'Signing In...');
 
             try {
                 // Check provider in Supabase
@@ -515,19 +519,24 @@
 
                 showDashboard();
                 loadRequests();
-                alert('Login successful!');
+                console.log('Login successful!');
 
             } catch (error) {
                 console.error('Login error:', error);
                 alert('Login failed. Please try again.');
+            } finally {
+                setButtonLoading(loginBtn, false, 'Sign In');
             }
         }
 
         async function registerProvider(event) {
             event.preventDefault();
             
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('providerPhone').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const registerBtn = document.getElementById('providerRegisterBtn');
 
             if (password !== confirmPassword) {
                 alert('Passwords do not match');
@@ -542,27 +551,51 @@
                 return;
             }
 
-            const providerData = {
-                company_name: document.getElementById('companyName').value,
-                name: document.getElementById('providerName').value,
-                pincodes: document.getElementById('pincodes').value,
-                categories: categories.join(','),
-                phone: document.getElementById('providerPhone').value,
-                email: document.getElementById('registerEmail').value,
-                password: password,
-                gstin: document.getElementById('gstin').value || null,
-                status: 'active'
-            };
+            // Set loading state
+            setButtonLoading(registerBtn, true, 'Creating Account...');
 
             try {
+                // Check if email already exists
+                const { data: existingEmail, error: emailError } = await supabaseClient
+                    .from('providers')
+                    .select('email')
+                    .eq('email', email)
+                    .single();
+
+                if (existingEmail) {
+                    throw new Error('Email already registered. Please use a different email.');
+                }
+
+                // Check if phone already exists
+                const { data: existingPhone, error: phoneError } = await supabaseClient
+                    .from('providers')
+                    .select('phone')
+                    .eq('phone', phone)
+                    .single();
+
+                if (existingPhone) {
+                    throw new Error('Phone number already registered. Please use a different phone number.');
+                }
+
+                const providerData = {
+                    company_name: document.getElementById('companyName').value,
+                    name: document.getElementById('providerName').value,
+                    pincodes: document.getElementById('pincodes').value,
+                    categories: categories.join(','),
+                    phone: phone,
+                    email: email,
+                    password: password,
+                    gstin: document.getElementById('gstin').value || null,
+                    status: 'active'
+                };
+
                 const { data, error } = await supabaseClient
                     .from('providers')
                     .insert([providerData]);
 
                 if (error) {
                     console.error('Registration error:', error);
-                    alert('Registration failed. Email might already exist.');
-                    return;
+                    throw new Error('Registration failed. Please try again.');
                 }
 
                 alert('Registration successful! Please login.');
@@ -570,7 +603,9 @@
 
             } catch (error) {
                 console.error('Registration error:', error);
-                alert('Registration failed. Please try again.');
+                alert(error.message);
+            } finally {
+                setButtonLoading(registerBtn, false, 'Register as Provider');
             }
         }
 
@@ -1060,6 +1095,24 @@
         function handleMessageKeyPress(event) {
             if (event.key === 'Enter') {
                 sendMessage();
+            }
+        }
+
+        function setButtonLoading(button, isLoading, text) {
+            if (isLoading) {
+                button.disabled = true;
+                button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                button.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'bg-green-600', 'hover:bg-green-700');
+                button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>${text}`;
+            } else {
+                button.disabled = false;
+                button.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                if (button.id === 'providerLoginBtn') {
+                    button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                } else {
+                    button.classList.add('bg-green-600', 'hover:bg-green-700');
+                }
+                button.innerHTML = text;
             }
         }
 
